@@ -17,3 +17,28 @@ library(tmap)
 ```
 
 
+## read in the data 
+```{r}
+sf_trees <- read_csv(here("data","sf_trees","sf_trees.csv"))
+
+sf_trees %>% group_by(legal_status) %>% summarize(tree_count = n())
+#group by and then count how many lines of data 
+
+top_5_status <- sf_trees %>% 
+  group_by(legal_status) %>% 
+  summarize(tree_count = n()) %>% 
+  slice_max(tree_count, n = 5) %>% 
+  arrange(-tree_count)
+#slice_max gives you only the amount of observations you specify with highest values (max), lets make a plot with the new dataset
+
+#factor reordering will take the legal status and order it according it by the number of trees (fct_reorder), coordflip flips axis
+ggplot(data = top_5_status, aes(x = fct_reorder(legal_status, tree_count),
+                                y = tree_count)) +
+  geom_col() +
+  labs(y = 'Tree count', x = 'Legal Status') +
+  coord_flip() +
+  theme_minimal()
+
+```
+
+
